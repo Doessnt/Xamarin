@@ -1,0 +1,111 @@
+Enemy.cs
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+public class Enemy : MonoBehaviour
+{
+
+
+    [SerializeField]  List<Transform> Targets = new List<Transform>();
+    
+    NavMeshAgent agent;
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+    }
+
+    void Update()
+    {
+        goToTarget(Targets);
+
+    }
+    void goToTarget(List<Transform> list)
+    {
+        int i = 0;
+
+        foreach (var item in list)
+        {
+
+            if (i == list.Count)
+            {
+
+                break;
+            }
+            i++;
+
+
+        }
+        int randomTransform = Random.Range(1, i);
+
+        for (int j = 0; j <=  randomTransform; j++)
+        {
+            agent.SetDestination(list[randomTransform].position);
+            print(list[randomTransform].name);
+
+        }
+        
+
+
+
+    }
+}
+player.cs
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+
+
+public class Player : MonoBehaviour
+{
+    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] GameObject myPrefab;
+    Rigidbody2D rb;
+    NavMeshAgent agent;
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Update()
+    {
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        Vector2 movment = new Vector2(horizontal, vertical).normalized;
+        rb.velocity = movment * moveSpeed;
+
+
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 lookDir = mousePos - transform.position;
+        float angle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
+        rb.rotation = angle;
+        if (Input.GetMouseButtonDown(0))
+        {
+            shoot();
+        }
+    }
+    void shoot()
+    {
+        if (myPrefab != null)
+        {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = 0f; 
+
+            GameObject newPrefabInstance = Instantiate(myPrefab, mousePosition, Quaternion.identity);
+
+        }
+        else
+        {
+            Debug.LogError("Prefab nerde AMK");
+        }
+    }
+}
+
